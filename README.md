@@ -1,1 +1,54 @@
-# All-Maps
+<!DOCTYPE html>Add commentMore actions
+<html>
+<head>
+  <title>Distance to Shop</title>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDAIVYLtvbtLb-V6t6g7rgOcvMT7CUAKGE"></script>
+</head>
+<body>
+  <h2>Distance to Shop</h2>
+  <p id="output">Calculating...</p>
+
+  <script>
+    // Shop's fixed location (latitude, longitude)
+    const shopLocation = { lat: 25.178577, lng: 88.246117 }; // Example: Empire State Building
+
+    function initMap() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(position => {
+          const userLocation = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          };
+
+          const service = new google.maps.DistanceMatrixService();
+          service.getDistanceMatrix(
+            {
+              origins: [userLocation],
+              destinations: [shopLocation],
+              travelMode: 'DRIVING',
+              unitSystem: google.maps.UnitSystem.METRIC,
+            },
+            (response, status) => {
+              if (status === 'OK') {
+                const result = response.rows[0].elements[0];
+                const distance = result.distance.text;
+                const duration = result.duration.text;
+                document.getElementById('output').innerHTML =
+                  `Distance: ${distance} <br>Estimated time: ${duration}`;
+              } else {
+                document.getElementById('output').innerText = 'Error: ' + status;
+              }
+            }
+          );
+        }, () => {
+          document.getElementById('output').innerText = 'Geolocation failed.';
+        });
+      } else {
+        document.getElementById('output').innerText = 'Geolocation is not supported by this browser.';
+      }
+    }
+
+    window.onload = initMap;
+  </script>
+</body>
+</html>
